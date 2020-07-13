@@ -1,10 +1,12 @@
 package com.skvortsovfk.bluetoothlescanner.ui
 
+import android.bluetooth.BluetoothDevice
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.skvortsovfk.bluetoothlescanner.R
@@ -37,6 +39,22 @@ class DeviceListFragment : Fragment() {
 
         val adapter = DeviceListAdapter()
         binding.deviceListRecyclerView.adapter = adapter
+
+        adapter.onItemClick = { bluetoothDevice ->
+            Toast.makeText(
+                context,
+                "Clicked ${bluetoothDevice.name} ${bluetoothDevice.address}",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        adapter.onNameClick = { bluetoothDevice ->
+            Toast.makeText(
+                context,
+                "${bluetoothDevice.name}",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
 
         viewModel.devices.observe(viewLifecycleOwner, Observer {  devices ->
             devices?.let { adapter.values = devices }
