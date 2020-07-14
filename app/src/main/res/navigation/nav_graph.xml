@@ -9,5 +9,17 @@
         android:id="@+id/deviceListFragment"
         android:name="com.skvortsovfk.bluetoothlescanner.ui.DeviceListFragment"
         android:label="fragment_device_list"
-        tools:layout="@layout/fragment_device_list" />
+        tools:layout="@layout/fragment_device_list" >
+        <action
+            android:id="@+id/action_deviceListFragment_to_deviceControlFragment"
+            app:destination="@id/deviceControlFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/deviceControlFragment"
+        android:name="com.skvortsovfk.bluetoothlescanner.ui.DeviceControlFragment"
+        android:label="fragment_device_control"
+        tools:layout="@layout/fragment_device_control" >
+        <argument android:name="bluetoothDevice"
+            app:argType="android.bluetooth.BluetoothDevice" />
+    </fragment>
 </navigation>
