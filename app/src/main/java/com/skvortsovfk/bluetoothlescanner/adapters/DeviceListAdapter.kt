@@ -9,8 +9,7 @@ import kotlinx.android.synthetic.main.list_item_device.view.*
 
 class DeviceListAdapter : RecyclerView.Adapter<DeviceViewHolder>() {
 
-    var onItemClick: ((BluetoothDevice) -> Unit)? = null
-    var onNameClick: ((BluetoothDevice) -> Unit)? = null
+    var onCardClick: ((BluetoothDevice) -> Unit)? = null
 
     var values = emptyList<BluetoothDevice>()
         set(value) {
@@ -33,11 +32,7 @@ class DeviceListAdapter : RecyclerView.Adapter<DeviceViewHolder>() {
         holder.bind(device)
 
         holder.itemView.cardView.setOnClickListener {
-            onItemClick?.invoke(values[position])
-        }
-
-        holder.itemView.cardView.nameTextView.setOnClickListener {
-            onNameClick?.invoke(values[position])
+            onCardClick?.invoke(values[position])
         }
     }
 }
