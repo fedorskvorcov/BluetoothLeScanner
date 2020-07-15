@@ -82,6 +82,9 @@ class DeviceControlFragment : Fragment() {
         binding.disconnectButton.setOnClickListener {
             bluetoothLeService?.disconnect()
         }
+        binding.sendButton.setOnClickListener {
+            bluetoothLeService?.send(KEY_TO_OPEN)
+        }
         // Bind to local service
         Intent(requireContext(), BluetoothLeService::class.java).also { intent ->
             activity?.bindService(intent, connection, Context.BIND_AUTO_CREATE)
@@ -114,6 +117,8 @@ class DeviceControlFragment : Fragment() {
     }
 
     companion object {
-        private val TAG = DeviceListFragment::class.simpleName!!
+        private val TAG = DeviceControlFragment::class.simpleName!!
+
+        private val KEY_TO_OPEN = "300000000000 34 56 78\r\n"
     }
 }

@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Binder
 import android.util.Log
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import java.lang.Thread.sleep
 import java.util.*
 
 class BluetoothLeService : Service() {
@@ -29,6 +29,9 @@ class BluetoothLeService : Service() {
                     connectionState = STATE_CONNECTED
                     broadcastUpdate(intentAction)
                     Log.i(TAG, "Connected to GATT server.")
+                    // Attempts to discover services after successful connection.
+                    Log.i(TAG, "Attempting to start service discovery: " +
+                            "${bluetoothGatt?.discoverServices()}")
                 }
                 BluetoothProfile.STATE_DISCONNECTED -> {
                     intentAction = ACTION_GATT_DISCONNECTED
@@ -107,6 +110,39 @@ class BluetoothLeService : Service() {
         return true
     }
 
+    fun send(data: String) {
+        val bluetoothGattService =
+            bluetoothGatt?.getService(BLUETOOTH_LE_CC254X_SERVICE)
+        val characteristic =
+            bluetoothGattService?.getCharacteristic(BLUETOOTH_LE_CC254X_CHARACTERISTIC)
+        when {
+            data == null -> {
+                Log.d(TAG, "Data is null")
+                return
+            }
+            bluetoothGattService == null -> {
+                Log.d(TAG, "Gatt service is null")
+                return
+            }
+            characteristic == null -> {
+                Log.d(TAG, "Characteristic is null")
+                return
+            }
+            else -> {}
+        }
+        // Bluetooth LE can send only 20 bytes of data
+        val chunks = data.chunked(CHUNKSIZE)
+        Log.d(TAG, "Chunks is $chunks")
+
+        for (chunk in chunks) {
+            characteristic?.value = chunk.toByteArray()
+            Log.d(TAG, "${characteristic.value}")
+            bluetoothGatt?.writeCharacteristic(characteristic)
+            Log.d(TAG, "Characteristic should be wrote")
+            sleep(100)
+        }
+    }
+
     fun disconnect() {
         if (bluetoothAdapter == null || bluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized")
@@ -127,8 +163,12 @@ class BluetoothLeService : Service() {
         private const val STATE_CONNECTING = 1
         private const val STATE_CONNECTED = 2
 
+        private const val CHUNKSIZE = 20
         private val BLUETOOTH_LE_CC254X_SERVICE =
             UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb")
+
+        private val BLUETOOTH_LE_CC254X_CHARACTERISTIC =
+            UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb")
 
         const val ACTION_GATT_CONNECTED =
             "com.skvortsovfk.bluetoothlescanner.ACTION_GATT_CONNECTED"
