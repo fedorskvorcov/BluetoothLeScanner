@@ -32,7 +32,7 @@ class DeviceListAdapter : RecyclerView.Adapter<DeviceViewHolder>() {
         holder.bind(device)
 
         holder.itemView.cardView.setOnClickListener {
-            onCardClick?.invoke(values[position])
+            onCardClick?.invoke(device)
         }
     }
 }
